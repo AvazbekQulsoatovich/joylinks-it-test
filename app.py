@@ -10,11 +10,10 @@ import io
 import base64
 import os
 from functools import wraps
-import psycopg2  # PostgreSQL support
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://user:password@localhost/education_system'  # PostgreSQL database URI
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///joylinks_test.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
