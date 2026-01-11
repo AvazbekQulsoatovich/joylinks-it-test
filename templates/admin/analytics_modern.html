@@ -1,0 +1,299 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Analytics - Joylinks IT{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Analytics Dashboard</h1>
+            <p class="page-subtitle">Test performance insights</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn-primary-custom" onclick="refreshAnalytics()">
+                <i class="fas fa-sync me-2"></i>Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ charts.total_results if charts.total_results else '0' }}</h3>
+                    <p class="mb-0">Total Tests</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ "%.1f"|format(charts.average_score) if charts.average_score else '0.0' }}%</h3>
+                    <p class="mb-0">Average Score</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ charts.pass_fail.pass if charts.pass_fail else '0' }}</h3>
+                    <p class="mb-0">Passed</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ charts.pass_fail.fail if charts.pass_fail else '0' }}</h3>
+                    <p class="mb-0">Failed</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Group Performance</h5>
+            <div class="group-performance">
+                {% if charts.group_averages %}
+                    {% for group_name, avg_score in charts.group_averages.items() %}
+                    <div class="group-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span>{{ group_name }}</span>
+                            <span class="badge bg-info">{{ "%.1f"|format(avg_score) }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px; background: var(--bg-secondary);">
+                            <div class="progress-bar" style="width: {{ "%.1f"|format(avg_score) }}%; background: var(--accent);"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-secondary">
+                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                        <p>No group data available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Pass/Fail Ratio</h5>
+            <div class="pass-fail-chart">
+                {% if charts.pass_fail %}
+                <div class="pass-section">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Passed</span>
+                        <span class="badge bg-success">{{ charts.pass_fail.pass }}</span>
+                    </div>
+                    <div class="progress" style="height: 20px; background: var(--bg-secondary);">
+                        {% set total = charts.pass_fail.pass + charts.pass_fail.fail %}
+                        {% set pass_percent = (charts.pass_fail.pass / total * 100) if total > 0 else 0 %}
+                        <div class="progress-bar" style="width: {{ "%.1f"|format(pass_percent) }}%; background: #28a745;"></div>
+                    </div>
+                </div>
+                <div class="fail-section">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Failed</span>
+                        <span class="badge bg-danger">{{ charts.pass_fail.fail }}</span>
+                    </div>
+                    <div class="progress" style="height: 20px; background: var(--bg-secondary);">
+                        {% set total = charts.pass_fail.pass + charts.pass_fail.fail %}
+                        {% set fail_percent = (charts.pass_fail.fail / total * 100) if total > 0 else 0 %}
+                        <div class="progress-bar" style="width: {{ "%.1f"|format(fail_percent) }}%; background: #dc3545;"></div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center text-secondary">
+                    <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                    <p>No pass/fail data available</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent);
+}
+
+.stats-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.stats-card p {
+    color: var(--text-secondary);
+    margin: 0;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stats-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+    box-shadow: 0 4px 20px rgba(26, 95, 79, 0.3);
+}
+
+.stats-icon i {
+    font-size: 1.25rem;
+    color: var(--bg-primary);
+}
+
+.group-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+.pass-section, .fail-section {
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.pass-section {
+    background: rgba(40, 167, 69, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.fail-section {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.floating-element {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: floatElement 5s ease-in-out infinite;
+}
+
+@keyframes floatElement {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats cards
+    const cards = document.querySelectorAll('.stats-card');
+    cards.forEach((card, index) => {
+        card.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
+    });
+
+    // Animate progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach((bar, index) => {
+        setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+        }, index * 100);
+    });
+
+    // Animate group items
+    const groupItems = document.querySelectorAll('.group-item');
+    groupItems.forEach((item, index) => {
+        item.style.animation = `slideUp 0.6s ease-out ${index * 0.1}s`;
+    });
+
+    // Add hover effects
+    document.querySelectorAll('.stats-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(-4px) scale(1)';
+        });
+    });
+});
+
+function refreshAnalytics() {
+    console.log('Refreshing analytics...');
+    location.reload();
+}
+</script>
+{% endblock %}

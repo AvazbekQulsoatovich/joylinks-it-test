@@ -1,0 +1,37 @@
+🎯 TO'G'RI LOGIN MA'LUMOTLARI
+
+👑 ADMIN:
+Username: admin
+Password: secure_admin_password_2024
+
+👨‍🏫 O'QITUVCHILAR:
+
+1. Aliyev Karim
+   Username: teacher1
+   Password: teacher123
+
+2. Saidova Dilnoza  
+   Username: teacher2
+   Password: teacher123
+
+3. Rahimov Botir
+   Username: teacher3
+   Password: teacher123
+
+4. Hoshimova Gulnora
+   Username: teacher4
+   Password: teacher123
+
+👨‍🎓 O'QUVCHILAR (misol uchun):
+Username: student01
+Password: student01
+
+Username: student02  
+Password: student02
+
+... va hokazo (student01 dan student80 gacha)
+
+⚠️ E'TIBOR:
+- Username va Password aniq shu ko'rinishda kiritilishi kerak
+- Bo'shliq yoki qo'shimcha belgi bo'lmasin
+- Katta-kichik harflar muhim emas (lekin to'g'ri kiritish yaxshi)

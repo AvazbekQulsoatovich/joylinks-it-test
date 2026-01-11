@@ -1,0 +1,247 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Admin Boshqaruv Paneli - Joylinks IT{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Admin Boshqaruv Paneli</h1>
+            <p class="page-subtitle">Ta'lim platformangizning umumiy ko'rinishi</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin_add_teacher') }}" class="btn-primary-custom">
+                <i class="fas fa-user-plus me-2"></i>O'qituvchi Qo'shish
+            </a>
+            <a href="{{ url_for('admin_add_course') }}" class="btn-primary-custom">
+                <i class="fas fa-graduation-cap me-2"></i>Kurs Qo'shish
+            </a>
+            <a href="{{ url_for('admin_add_group') }}" class="btn-primary-custom">
+                <i class="fas fa-users me-2"></i>Guruh Qo'shish
+            </a>
+            <a href="{{ url_for('admin_add_student') }}" class="btn-primary-custom">
+                <i class="fas fa-user-graduate me-2"></i>O'quvchi Qo'shish
+            </a>
+            <a href="{{ url_for('admin_add_test') }}" class="btn-primary-custom">
+                <i class="fas fa-clipboard-list me-2"></i>Test Qo'shish
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ total_students }}</h3>
+                    <p class="mb-0">O'quvchilar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ total_teachers }}</h3>
+                    <p class="mb-0">O'qituvchilar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ total_courses }}</h3>
+                    <p class="mb-0">Kurslar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ total_groups }}</h3>
+                    <p class="mb-0">Guruhlar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ total_tests }}</h3>
+                    <p class="mb-0">Testlar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ current_time.strftime('%H:%M') }}</h3>
+                    <p class="mb-0">Joriy Vaqt</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">So'nggi Faoliyat</h5>
+            <div class="activity-list">
+                <div class="activity-item d-flex align-items-center mb-3">
+                    <div class="activity-icon me-3">
+                        <i class="fas fa-user-plus" style="color: var(--accent);"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h6 class="mb-1" style="color: var(--text-primary);">New student registered</h6>
+                        <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">2 minutes ago</p>
+                    </div>
+                </div>
+                
+                <div class="activity-item d-flex align-items-center mb-3">
+                    <div class="activity-icon me-3">
+                        <i class="fas fa-clipboard-check" style="color: var(--accent);"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h6 class="mb-1" style="color: var(--text-primary);">Test completed</h6>
+                        <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">5 minutes ago</p>
+                    </div>
+                </div>
+                
+                <div class="activity-item d-flex align-items-center mb-3">
+                    <div class="activity-icon me-3">
+                        <i class="fas fa-book-open" style="color: var(--accent);"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h6 class="mb-1" style="color: var(--text-primary);">New course added</h6>
+                        <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">1 hour ago</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Quick Actions</h5>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('admin_add_course') }}" class="btn-primary-custom">
+                    <i class="fas fa-plus me-2"></i>Add New Course
+                </a>
+                <a href="{{ url_for('admin_add_teacher') }}" class="btn-primary-custom">
+                    <i class="fas fa-user-plus me-2"></i>Add Teacher
+                </a>
+                <a href="{{ url_for('admin_results') }}" class="btn-primary-custom">
+                    <i class="fas fa-chart-line me-2"></i>View Results
+                </a>
+            </div>
+        </div>
+        
+        <div class="content-card mt-4">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">System Status</h5>
+            <div class="status-item mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span style="color: var(--text-secondary);">Database</span>
+                    <span class="badge" style="background: #10b981; color: white;">Online</span>
+                </div>
+                <div class="progress" style="height: 4px; background: var(--bg-secondary);">
+                    <div class="progress-bar" style="width: 100%; background: #10b981;"></div>
+                </div>
+            </div>
+            
+            <div class="status-item mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span style="color: var(--text-secondary);">Server Load</span>
+                    <span class="badge" style="background: #f59e0b; color: white;">Medium</span>
+                </div>
+                <div class="progress" style="height: 4px; background: var(--bg-secondary);">
+                    <div class="progress-bar" style="width: 65%; background: #f59e0b;"></div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span style="color: var(--text-secondary);">Storage</span>
+                    <span class="badge" style="background: #10b981; color: white;">Good</span>
+                </div>
+                <div class="progress" style="height: 4px; background: var(--bg-secondary);">
+                    <div class="progress-bar" style="width: 35%; background: #10b981;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.progress {
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+}
+</style>
+{% endblock %}

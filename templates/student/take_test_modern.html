@@ -1,0 +1,383 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Take Test - {{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">{{ test.title }}</h1>
+            <p class="page-subtitle">Barcha savollarga javob bering vaqt tugay tugan bo'lishing</p>
+        </div>
+        <div class="d-flex gap-2">
+            <div class="alert alert-warning" style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 12px;">
+                <i class="fas fa-clock me-2"></i>Qolgan Vaqt: <span id="timer">{{ test.duration_minutes }}:00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
+                <i class="fas fa-clipboard-list me-2" style="color: var(--accent);"></i>Test Ma'lumoti
+            </h5>
+            <div class="test-info mb-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="info-item">
+                            <h5 class="mb-0"><i class="fas fa-info-circle"></i> Muhim Ma'lumot</h5>
+                            <ul class="mb-0">
+                                <li>Barcha savollarga javob bering</li>
+                                <li>Vaqt tugashidan oldin yuborish</li>
+                                <li>Natijalar darhol ko'riniladi</li>
+                                <li>Faqat bir marta yuborish mumkin</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p><strong>Test:</strong> {{ test.title }}</p>
+                    <p><strong>Savollar soni:</strong> {{ questions|length }}</p>
+                    <p><strong>Davomiyligi:</strong> {{ test.duration_minutes }} daqiqa</p>
+                    <p><strong>Tugash vaqti:</strong> {{ test.end_time.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
+                <i class="fas fa-info-circle me-2" style="color: var(--accent);"></i>Muhim Ko'rsatmalar
+            </h5>
+            <div class="instructions-list">
+                <div class="instruction-item">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span>Barcha savollarga javob bering</span>
+                </div>
+                <div class="instruction-item">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span>Vaqt tugashidan oldin yuborish</span>
+                </div>
+                <div class="instruction-item">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span>Natijalar darhol ko'riniladi</span>
+                </div>
+                <div class="instruction-item">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span>Faqat bir marta yuborish mumkin</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form method="POST" action="{{ url_for('student_submit_test', test_id=test.id) }}" id="testForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="content-card mt-4">
+        <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
+                <i class="fas fa-question-circle me-2" style="color: var(--accent);"></i>Savollar
+            </h5>
+        
+        {% for question in questions %}
+        <div class="question-card mb-4">
+            <div class="question-header">
+                <h6 class="mb-1" style="color: var(--text-primary);">Savol {{ loop.index }}</h6>
+            </div>
+            <div class="question-body">
+                <p class="question-text" style="color: var(--text-secondary); margin-bottom: 1.5rem;">{{ question.question_text }}</p>
+                
+                <div class="options-grid">
+                    <div class="option-item">
+                        <input type="radio" name="question_{{ question.id }}" id="question_{{ question.id }}_a" value="A" required>
+                        <label for="question_{{ question.id }}_a" class="option-label">
+                            <span class="option-letter">A</span>
+                            <span class="option-text">{{ question.option_a }}</span>
+                        </label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="question_{{ question.id }}" id="question_{{ question.id }}_b" value="B">
+                        <label for="question_{{ question.id }}_b" class="option-label">
+                            <span class="option-letter">B</span>
+                            <span class="option-text">{{ question.option_b }}</span>
+                        </label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="question_{{ question.id }}" id="question_{{ question.id }}_c" value="C">
+                        <label for="question_{{ question.id }}_c" class="option-label">
+                            <span class="option-letter">C</span>
+                            <span class="option-text">{{ question.option_c }}</span>
+                        </label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" name="question_{{ question.id }}" id="question_{{ question.id }}_d" value="D">
+                        <label for="question_{{ question.id }}_d" class="option-label">
+                            <span class="option-letter">D</span>
+                            <span class="option-text">{{ question.option_d }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="content-card mt-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span class="text-muted">Savollar: {{ questions|length }} | Vaqt: {{ test.duration_minutes }} daqiqa</span>
+            </div>
+            <div>
+                <button type="button" class="btn btn-outline-secondary" onclick="confirmSubmit()">
+                    <i class="fas fa-save me-2"></i>Testni Topshirish
+                </button>
+                <button type="submit" class="btn-primary-custom" id="submitBtn" style="display: none;">
+                    <i class="fas fa-check me-2"></i>Tasdiqlash
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="submitModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="background: var(--bg-card); border: 1px solid var(--border);">
+            <div class="modal-header" style="border-bottom: 1px solid var(--border);">
+                <h5 class="modal-title" style="color: var(--text-primary);">Testni Topshirishni Tasdiqlash</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="color: var(--text-secondary);"></button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--text-primary); font-weight: 600;">Testni topshirishga ishonchingizmi?</p>
+                <div class="warning-list">
+                    <div class="warning-item">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                        <span>Javoblaringizdan keyin o'zgartirib bo'lmaysiz</span>
+                    </div>
+                    <div class="warning-item">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                        <span>Natijalar darhol ko'riniladi</span>
+                    </div>
+                    <div class="warning-item">
+                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i>
+                        <span>Faqat bir marta yuborish mumkin</span>
+                    </div>
+                </div>
+                <p class="mt-3" style="color: var(--text-primary); font-weight: 600;">Barcha savollarga javob beringdan oldin o'tkazib chiqing.</p>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid var(--border);">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Bekor qilish</button>
+                <button type="button" class="btn-primary-custom" onclick="document.getElementById('submitBtn').click(); document.getElementById('submitModal').classList.remove('show'); document.getElementById('submitModal').style.display = 'none';">Testni Topshirish</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.test-info {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.info-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.instructions-list {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 0;
+    color: var(--text-secondary);
+}
+
+.instruction-item i {
+    margin-right: 0.75rem;
+}
+
+.question-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.question-card:hover {
+    border-color: var(--accent);
+}
+
+.question-header h6 {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.question-text {
+    line-height: 1.6;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.option-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.option-item:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.option-item input[type="radio"] {
+    display: none;
+}
+
+.option-label {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+.option-item input[type="radio"]:checked + .option-label {
+    background: var(--bg-secondary);
+    border-color: var(--accent);
+}
+
+.option-letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-radius: 50%;
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.option-text {
+    line-height: 1.4;
+}
+
+.btn-outline-secondary {
+    border-color: var(--border);
+    color: var(--text-secondary);
+    background: transparent;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--accent);
+}
+
+.modal {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.warning-list {
+    margin: 1rem 0;
+}
+
+.warning-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+}
+
+.warning-item i {
+    margin-right: 0.5rem;
+}
+</style>
+
+<script>
+let timeLeft = {{ test.duration_minutes * 60 }};
+const timerElement = document.getElementById('timer');
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerElement.textContent = minutes.toString() + ':' + seconds.toString().padStart(2, '0');
+    
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        alert('Time is up! Submitting your test automatically.');
+        document.getElementById('testForm').submit();
+    }
+    
+    timeLeft--;
+}
+
+const timerInterval = setInterval(updateTimer, 1000);
+
+function confirmSubmit() {
+    const modal = new bootstrap.Modal(document.getElementById('submitModal'));
+    modal.show();
+}
+
+// Warn before leaving page
+window.addEventListener('beforeunload', function(e) {
+    e.preventDefault();
+    e.returnValue = '';
+});
+
+// Auto-save functionality (optional enhancement)
+document.addEventListener('DOMContentLoaded', function() {
+    const options = document.querySelectorAll('input[type="radio"]');
+    options.forEach(function(option) {
+        option.addEventListener('change', function() {
+            console.log('Answer changed:', this.name, this.value);
+        });
+    });
+});
+</script>
+{% endblock %}

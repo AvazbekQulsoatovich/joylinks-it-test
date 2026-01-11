@@ -1,0 +1,189 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Results - Joylinks IT{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Test Results</h1>
+            <p class="page-subtitle">View all student test results</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn-primary-custom" onclick="exportResults()">
+                <i class="fas fa-download me-2"></i>Export Results
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-user me-2"></i>Student</th>
+                    <th><i class="fas fa-clipboard-list me-2"></i>Test</th>
+                    <th><i class="fas fa-users me-2"></i>Group</th>
+                    <th><i class="fas fa-percentage me-2"></i>Score</th>
+                    <th><i class="fas fa-check-circle me-2"></i>Status</th>
+                    <th><i class="fas fa-calendar me-2"></i>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result, student, user, group, test in results %}
+                <tr class="table-row-hover">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="student-avatar me-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <strong>{{ user.full_name }}</strong>
+                                <br>
+                                <small class="text-secondary">@{{ user.username }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">{{ test.title }}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning">{{ group.name }}</span>
+                    </td>
+                    <td>
+                        <div class="score-display">
+                            <div class="progress" style="height: 8px; background: var(--bg-secondary);">
+                                <div class="progress-bar" style="width: 85%; background: {{ '#28a745' if result.percentage >= 60 else '#dc3545' }};"></div>
+                            </div>
+                            <strong>{{ result.percentage }}%</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {{ 'bg-success' if result.percentage >= 60 else 'bg-danger' }}">
+                            {{ 'Passed' if result.percentage >= 60 else 'Failed' }}
+                        </span>
+                    </td>
+                    <td>
+                        <small class="text-secondary">{{ result.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.score-display {
+    min-width: 100px;
+}
+
+.table-dark {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+}
+
+.table-dark th {
+    background: var(--bg-secondary);
+    border-color: var(--border);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.table-dark td {
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+.table-row-hover {
+    transition: all 0.3s ease;
+}
+
+.table-row-hover:hover {
+    background: var(--bg-secondary);
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(26, 95, 79, 0.2);
+}
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+.btn-outline-light {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-outline-light:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+.floating-element {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: floatElement 5s ease-in-out infinite;
+}
+
+@keyframes floatElement {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.table-row-hover');
+    rows.forEach((row, index) => {
+        row.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
+    });
+
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach((bar, index) => {
+        setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+        }, index * 100);
+    });
+
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px) scale(1.05)';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+
+function exportResults() {
+    console.log('Export results');
+}
+</script>
+{% endblock %}

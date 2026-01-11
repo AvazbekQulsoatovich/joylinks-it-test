@@ -1,212 +1,225 @@
 {% extends "base_modern.html" %}
 
-{% block title %}Teacher Dashboard - Education Management System{% endblock %}
+{% block title %}O'qituvchi Paneli - Joylinks IT{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <h1><i class="fas fa-tachometer-alt me-3"></i>Teacher Dashboard</h1>
-            <p class="mb-0">Welcome back, {{ current_user.full_name }}! Here's your teaching overview.</p>
-        </div>
-        <div class="col-md-4 text-end">
-            <div class="d-flex gap-2 justify-content-end">
-                <a href="{{ url_for('teacher_add_student') }}" class="btn btn-light">
-                    <i class="fas fa-user-plus me-2"></i>Add Student
-                </a>
-                <a href="{{ url_for('teacher_add_test') }}" class="btn btn-light">
-                    <i class="fas fa-plus me-2"></i>Create Test
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">O'qituvchi Paneli</h1>
+            <p class="page-subtitle">Guruhlaringiz va o'quvchilaringiz haqida ma'lumot</p>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
+<div class="row g-4 mb-4">
+    <div class="col-xl-4">
         <div class="stats-card">
-            <i class="fas fa-users fa-2x mb-3"></i>
-            <h3>{{ total_students }}</h3>
-            <p>Total Students</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-clipboard-list fa-2x mb-3"></i>
-            <h3>{{ total_tests }}</h3>
-            <p>Total Tests</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-check-circle fa-2x mb-3"></i>
-            <h3>{{ passed_tests }}</h3>
-            <p>Passed Tests</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-percentage fa-2x mb-3"></i>
-            <h3>{{ "%.1f"|format(average_score) }}%</h3>
-            <p>Average Score</p>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-lg-8 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Recent Test Results</h5>
-            </div>
-            <div class="card-body">
-                {% if recent_results %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Test</th>
-                                <th>Score</th>
-                                <th>Percentage</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for result, student, user, group, test in recent_results %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
-                                            {{ user.full_name[0].upper() }}
-                                        </div>
-                                        <div>
-                                            <strong>{{ user.full_name }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ group.name }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ test.title }}</td>
-                                <td>{{ result.score }}/{{ result.total_questions }}</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="progress me-2" style="width: 100px;">
-                                            <div class="progress-bar {% if result.percentage >= 60 %}bg-success{% elif result.percentage >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
-                                                 style="width: {{ result.percentage }}%"></div>
-                                        </div>
-                                        <small>{{ "%.1f"|format(result.percentage) }}%</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if result.percentage >= 60 %}
-                                        <span class="badge bg-success">Pass</span>
-                                    {% else %}
-                                        <span class="badge bg-danger">Fail</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ result.submitted_at.strftime('%b %d, %Y') }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ groups|length }}</h3>
+                    <p class="mb-0">Guruhlar</p>
                 </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-                    <h5>No test results yet</h5>
-                    <p class="text-muted">Students need to take tests to generate results.</p>
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
     
-    <div class="col-lg-4 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Performance Overview</h5>
+    <div class="col-xl-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ students_count }}</h3>
+                    <p class="mb-0">O'quvchilar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Pass Rate</span>
-                        <strong>{{ "%.1f"|format(pass_rate) }}%</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" style="width: {{ pass_rate }}%"></div>
-                    </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ tests_count }}</h3>
+                    <p class="mb-0">Testlar</p>
                 </div>
-                
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Average Score</span>
-                        <strong>{{ "%.1f"|format(average_score) }}%</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-primary" style="width: {{ average_score }}%"></div>
-                    </div>
-                </div>
-                
-                <div class="text-center">
-                    <h6 class="text-muted mb-3">Quick Actions</h6>
-                    <div class="d-grid gap-2">
-                        <a href="{{ url_for('teacher_add_student') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-user-plus me-2"></i>Add New Student
-                        </a>
-                        <a href="{{ url_for('teacher_add_test') }}" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-plus me-2"></i>Create New Test
-                        </a>
-                        <a href="{{ url_for('teacher_results') }}" class="btn btn-outline-info btn-sm">
-                            <i class="fas fa-chart-line me-2"></i>View All Results
-                        </a>
-                    </div>
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Upcoming Tests</h5>
-            </div>
-            <div class="card-body">
-                {% if upcoming_tests %}
-                <div class="row">
-                    {% for test, group in upcoming_tests %}
-                    <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card border-primary">
-                            <div class="card-body">
-                                <h6 class="card-title">{{ test.title }}</h6>
-                                <p class="card-text">
-                                    <i class="fas fa-users me-2"></i>{{ group.name }}<br>
-                                    <i class="fas fa-clock me-2"></i>{{ test.start_time.strftime('%b %d, %Y - %H:%M') }}<br>
-                                    <i class="fas fa-hourglass-half me-2"></i>{{ test.duration_minutes }} minutes
-                                </p>
-                                <div class="d-flex justify-content-between">
-                                    <span class="badge bg-primary">{{ test.total_questions or 0 }} questions</span>
-                                    <a href="{{ url_for('teacher_edit_test', test_id=test.id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
+                <i class="fas fa-users me-2" style="color: var(--accent);"></i>Mening Guruhlarim
+            </h5>
+            {% if groups %}
+            <div class="row g-3">
+                {% for group in groups %}
+                <div class="col-md-6">
+                    <a href="{{ url_for('teacher_group_students', group_id=group.id) }}" class="text-decoration-none">
+                        <div class="group-card">
+                            <div class="group-header">
+                                <div class="group-icon">
+                                    <i class="fas fa-users"></i>
                                 </div>
+                                <h6 style="color: var(--text-primary);">{{ group.name }}</h6>
+                            </div>
+                            <div class="group-stats">
+                                <span class="student-count">{{ group.students|length }} o'quvchi</span>
                             </div>
                         </div>
-                    </div>
-                    {% endfor %}
+                    </a>
                 </div>
-                {% else %}
-                <div class="text-center py-4">
-                    <i class="fas fa-calendar-alt fa-3x text-muted mb-3"></i>
-                    <h5>No upcoming tests</h5>
-                    <p class="text-muted">Create a new test to get started.</p>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-users fa-2x mb-3" style="color: var(--text-secondary);"></i>
+                <p class="text-muted">Sizda hali guruhlar yo'q. Admin bilan bog'laning.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
+                <i class="fas fa-info-circle me-2" style="color: var(--accent);"></i>Ma'lumot
+            </h5>
+            <div class="info-section">
+                <div class="info-item">
+                    <label>F.I.O</label>
+                    <span>{{ current_user.full_name }}</span>
                 </div>
-                {% endif %}
+                <div class="info-item">
+                    <label>Login</label>
+                    <span>{{ current_user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <label>Lavozim</label>
+                    <span>O'qituvchi</span>
+                </div>
+                <div class="info-item">
+                    <label>Kurs</label>
+                    <span>{{ teacher.course.name }}</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.group-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.group-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.group-item:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+}
+
+.activity-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-card);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.btn-outline-light {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn-outline-light:hover {
+    background: var(--accent);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+}
+
+.btn-outline-success {
+    border-color: #28a745;
+    color: #28a745;
+}
+
+.btn-outline-success:hover {
+    background: #28a745;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.floating-element {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: floatElement 5s ease-in-out infinite;
+}
+
+@keyframes floatElement {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const items = document.querySelectorAll('.group-item, .activity-item');
+    items.forEach((item, index) => {
+        item.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
+    });
+
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px) scale(1.05)';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -1,281 +1,246 @@
 {% extends "base_modern.html" %}
 
-{% block title %}Student Dashboard - Education Management System{% endblock %}
+{% block title %}O'quvchi Dashboard - Joylinks IT{% endblock %}
 
 {% block content %}
 <div class="page-header">
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <h1><i class="fas fa-graduation-cap me-3"></i>Student Dashboard</h1>
-            <p class="mb-0">Welcome back, {{ current_user.full_name }}! Track your learning progress.</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">O'quvchi Dashboard</h1>
+            <p class="page-subtitle">Test natijalaringiz va progressizngiz</p>
         </div>
-        <div class="col-md-4 text-end">
-            <div class="text-white">
-                <i class="fas fa-clock me-2"></i>
-                <span id="current-time">{{ current_time.strftime('%H:%M:%S') }}</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-user-graduate fa-2x mb-3"></i>
-            <h3>{{ student.user.full_name }}</h3>
-            <p>Your Name</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-users fa-2x mb-3"></i>
-            <h3>{{ student.group.name if student.group else 'No Group' }}</h3>
-            <p>Your Group</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-chalkboard-teacher fa-2x mb-3"></i>
-            <h3>{{ student.group.teacher.user.full_name if student.group and student.group.teacher else 'No Teacher' }}</h3>
-            <p>Your Teacher</p>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="stats-card">
-            <i class="fas fa-chart-line fa-2x mb-3"></i>
-            <h3>{{ results|length }}</h3>
-            <p>Tests Taken</p>
+        <div class="d-flex gap-2">
+            <button class="btn-primary-custom">
+                <i class="fas fa-user me-2"></i>Profil
+            </button>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-8 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Available Tests</h5>
-            </div>
-            <div class="card-body">
-                {% if available_tests %}
-                <div class="row">
-                    {% for test in available_tests %}
-                    <div class="col-md-6 col-lg-4 mb-3">
-                        <div class="card border-primary h-100">
-                            <div class="card-body d-flex flex-column">
-                                <h6 class="card-title">{{ test.title }}</h6>
-                                <div class="mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <small class="text-muted">
-                                            <i class="fas fa-clock me-1"></i>{{ test.duration_minutes }} min
-                                        </small>
-                                        {% if current_time < test.start_time %}
-                                            <span class="badge bg-secondary">Upcoming</span>
-                                        {% elif current_time > test.end_time %}
-                                            <span class="badge bg-danger">Ended</span>
-                                        {% else %}
-                                            <span class="badge bg-success">Active</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="progress mb-2" style="height: 6px;">
-                                        {% set time_progress = ((current_time - test.start_time).total_seconds() / (test.end_time - test.start_time).total_seconds() * 100) %}
-                                        <div class="progress-bar {% if time_progress >= 100 %}bg-danger{% elif time_progress >= 50 %}bg-warning{% else %}bg-success{% endif %}" 
-                                             style="width: {{ time_progress if time_progress >= 0 and time_progress <= 100 else 0 }}%"></div>
-                                    </div>
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar me-1"></i>
-                                        {{ test.start_time.strftime('%b %d, %Y - %H:%M') }}
-                                    </small>
-                                </div>
-                                <div class="mt-auto">
-                                    {% if current_time >= test.start_time and current_time <= test.end_time %}
-                                        <a href="{{ url_for('student_take_test', test_id=test.id) }}" class="btn btn-primary w-100">
-                                            <i class="fas fa-play me-2"></i>Start Test
-                                        </a>
-                                    {% elif current_time < test.start_time %}
-                                        <button class="btn btn-secondary w-100" disabled>
-                                            <i class="fas fa-clock me-2"></i>Starts at {{ test.start_time.strftime('%H:%M') }}
-                                        </button>
-                                    {% else %}
-                                        <button class="btn btn-danger w-100" disabled>
-                                            <i class="fas fa-times me-2"></i>Test Ended
-                                        </button>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-lg-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ results|length }}</h3>
+                    <p class="mb-0">Tugallangan Testlar</p>
                 </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
-                    <h5>No tests assigned</h5>
-                    <p class="text-muted">Wait for your teacher to assign tests.</p>
+                <div class="stats-icon">
+                    <i class="fas fa-check-circle"></i>
                 </div>
-                {% endif %}
             </div>
         </div>
     </div>
     
-    <div class="col-lg-4 mb-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Test Performance</h5>
+    <div class="col-xl-3 col-lg-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ available_tests|length }}</h3>
+                    <p class="mb-0">Mavjud Testlar</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
             </div>
-            <div class="card-body">
-                {% if results %}
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Average Score</span>
-                        <strong>{{ "%.1f"|format(results|sum(attribute='0.percentage') / results|length) }}%</strong>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-lg-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ "%.1f"|format(average_score) if average_score else 0 }}%</h3>
+                    <p class="mb-0">O'rtacha Ball</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-lg-6">
+        <div class="stats-card">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h3 class="mb-1">{{ student.group.name }}</h3>
+                    <p class="mb-0">Mening Guruhim</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Mavjud Testlar</h5>
+            <div class="tests-list">
+                {% for test in available_tests %}
+                <div class="test-item d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="test-icon me-3">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--text-primary);">{{ test.title }}</h6>
+                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">{{ test.description or 'Tavsif yoq' }}</p>
+                        </div>
                     </div>
-                    <div class="progress">
-                        <div class="progress-bar {% if (results|sum(attribute='0.percentage') / results|length) >= 60 %}bg-success{% elif (results|sum(attribute='0.percentage') / results|length) >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
-                             style="width: {{ results|sum(attribute='0.percentage') / results|length }}%"></div>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('student_take_test', test_id=test.id) }}" class="btn btn-sm btn-primary-custom">
+                            Testni Boshlash
+                        </a>
                     </div>
                 </div>
-                
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Best Score</span>
-                        <strong>{{ "%.1f"|format(results|map(attribute='0.percentage')|max) }}%</strong>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">So'nggi Natijalar</h5>
+            <div class="results-list">
+                {% for result, test in results[:5] %}
+                <div class="result-item d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="result-icon me-3">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--text-primary);">{{ test.title }}</h6>
+                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">Ball: {{ result.percentage }}%</p>
+                        </div>
                     </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" style="width: {{ results|map(attribute='0.percentage')|max }}%"></div>
-                    </div>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span>Tests Passed</span>
-                        <strong>{{ results|selectattr('0.percentage', '>=', 60)|list|length }}/{{ results|length }}</strong>
-                    </div>
-                    <div class="progress">
-                        <div class="progress-bar bg-info" style="width: {{ (results|selectattr('0.percentage', '>=', 60)|list|length / results|length * 100) }}%"></div>
-                    </div>
-                </div>
-                
-                <div class="text-center">
-                    <h6 class="text-muted mb-3">Recent Activity</h6>
-                    {% for result, test in results[:3] %}
-                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
-                        <small class="text-muted">{{ test.title[:20] }}...</small>
-                        <span class="badge {% if result.percentage >= 60 %}bg-success{% else %}bg-danger{% endif %}">
-                            {{ "%.0f"|format(result.percentage) }}%
+                    <div>
+                        <span class="badge {{ 'bg-success' if result.percentage >= 60 else 'bg-danger' }}">
+                            {{ 'Topshdi' if result.percentage >= 60 else 'Topshmadi' }}
                         </span>
                     </div>
-                    {% endfor %}
                 </div>
-                {% else %}
-                <div class="text-center py-4">
-                    <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-                    <h6>No test results yet</h6>
-                    <p class="text-muted">Complete tests to see your performance.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="content-card mt-4">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Mening Progressim</h5>
+            <div class="progress-section">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Umumiy Progress</span>
+                    <span class="badge bg-info">{{ average_score|round(1) if average_score else 0 }}%</span>
                 </div>
-                {% endif %}
+                <div class="progress" style="height: 10px; background: var(--bg-secondary);">
+                    <div class="progress-bar" style="width: {{ "%.1f"|format(average_score) if average_score else 0 }}%; background: var(--accent);"></div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Test Results</h5>
-            </div>
-            <div class="card-body">
-                {% if results %}
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Test</th>
-                                <th>Score</th>
-                                <th>Percentage</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for result, test in results %}
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; font-size: 0.8rem;">
-                                            <i class="fas fa-clipboard-list"></i>
-                                        </div>
-                                        <div>
-                                            <strong>{{ test.title }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ test.duration_minutes }} minutes</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ result.score }}/{{ result.total_questions }}</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="progress me-2" style="width: 80px;">
-                                            <div class="progress-bar {% if result.percentage >= 60 %}bg-success{% elif result.percentage >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
-                                                 style="width: {{ result.percentage }}%"></div>
-                                        </div>
-                                        <small>{{ "%.1f"|format(result.percentage) }}%</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    {% if result.percentage >= 60 %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check me-1"></i>Pass
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-times me-1"></i>Fail
-                                        </span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ result.submitted_at.strftime('%b %d, %Y - %H:%M') }}</td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-outline-primary" onclick="viewDetails({{ result.id }})">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                    <h5>No test results yet</h5>
-                    <p class="text-muted">Take tests to generate results.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+.test-icon, .result-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-primary);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.test-item, .result-item {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.test-item:hover, .result-item:hover {
+    transform: translateX(4px);
+    border-color: var(--accent);
+}
+
+.progress-section {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.progress {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+}
+
+.btn-primary-custom {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom:hover {
+    background: var(--accent-hover);
+    transform: translateY(-2px);
+    color: var(--bg-primary);
+}
+
+.floating-element {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: floatElement 5s ease-in-out infinite;
+}
+
+@keyframes floatElement {
+    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
+    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+}
+</style>
 
 <script>
-function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', { 
-        hour12: false, 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit' 
+document.addEventListener('DOMContentLoaded', function() {
+    const items = document.querySelectorAll('.test-item, .result-item');
+    items.forEach((item, index) => {
+        item.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
     });
-    document.getElementById('current-time').textContent = timeString;
-}
 
-// Update clock every second
-setInterval(updateClock, 1000);
-updateClock(); // Initial call
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach((bar, index) => {
+        setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+        }, index * 100);
+    });
 
-function viewDetails(resultId) {
-    // Placeholder for view details functionality
-    console.log('View details for result ID:', resultId);
-}
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px) scale(1.05)';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
 </script>
 {% endblock %}
