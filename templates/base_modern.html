@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Joylinks IT Ta'lim Tizimi{% endblock %}</title>
-    
+
     <!-- Bootstrap 5.3 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <style>
         :root {
             --bg-primary: #000000;
@@ -185,8 +187,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-header {
@@ -238,8 +247,15 @@
         }
 
         @keyframes shimmer {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
+
+            0%,
+            100% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
         }
 
         .stats-card:hover {
@@ -331,6 +347,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -348,11 +365,11 @@
             .sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.show {
                 transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
                 padding: 1rem;
@@ -381,6 +398,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Mobile Menu Toggle -->
     <button class="mobile-menu-toggle" onclick="toggleSidebar()">
@@ -399,58 +417,64 @@
             <div class="user-info">
                 <div class="user-avatar">
                     {% if current_user.role == 'admin' %}
-                        <i class="fas fa-crown"></i>
+                    <i class="fas fa-crown"></i>
                     {% elif current_user.role == 'teacher' %}
-                        <i class="fas fa-user-tie"></i>
+                    <i class="fas fa-user-tie"></i>
                     {% elif current_user.role == 'student' %}
-                        <i class="fas fa-user-graduate"></i>
+                    <i class="fas fa-user-graduate"></i>
                     {% endif %}
                 </div>
                 <div class="user-details">
                     <div class="user-name">{{ current_user.full_name }}</div>
                     <div class="user-role">
                         {% if current_user.role == 'admin' %}
-                            Admin
+                        Admin
                         {% elif current_user.role == 'teacher' %}
-                            Ustoz
+                        Ustoz
                         {% elif current_user.role == 'student' %}
-                            O'quvchi
+                        O'quvchi
                         {% endif %}
                     </div>
                 </div>
             </div>
             {% endif %}
         </div>
-        
+
         <nav class="sidebar-nav">
             {% if current_user.role == 'admin' %}
             <div class="nav-section">
                 <div class="nav-section-title">Asosiy</div>
-                <a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Boshqaruv Paneli</span>
                 </a>
-                <a href="{{ url_for('admin_analytics') }}" class="nav-link {% if request.endpoint == 'admin_analytics' %}active{% endif %}">
+                <a href="{{ url_for('admin_analytics') }}"
+                    class="nav-link {% if request.endpoint == 'admin_analytics' %}active{% endif %}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Analitika</span>
                 </a>
             </div>
-            
+
             <div class="nav-section">
                 <div class="nav-section-title">Boshqaruv</div>
-                <a href="{{ url_for('admin_courses') }}" class="nav-link {% if request.endpoint == 'admin_courses' %}active{% endif %}">
+                <a href="{{ url_for('admin_courses') }}"
+                    class="nav-link {% if request.endpoint == 'admin_courses' %}active{% endif %}">
                     <i class="fas fa-book"></i>
                     <span>Kurslar</span>
                 </a>
-                <a href="{{ url_for('admin_students') }}" class="nav-link {% if request.endpoint == 'admin_students' %}active{% endif %}">
+                <a href="{{ url_for('admin_students') }}"
+                    class="nav-link {% if request.endpoint == 'admin_students' %}active{% endif %}">
                     <i class="fas fa-user-graduate"></i>
                     <span>O'quvchilar</span>
                 </a>
-                <a href="{{ url_for('admin_teachers') }}" class="nav-link {% if request.endpoint == 'admin_teachers' %}active{% endif %}">
+                <a href="{{ url_for('admin_teachers') }}"
+                    class="nav-link {% if request.endpoint == 'admin_teachers' %}active{% endif %}">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>O'qituvchilar</span>
                 </a>
-                <a href="{{ url_for('admin_results') }}" class="nav-link {% if request.endpoint == 'admin_results' %}active{% endif %}">
+                <a href="{{ url_for('admin_results') }}"
+                    class="nav-link {% if request.endpoint == 'admin_results' %}active{% endif %}">
                     <i class="fas fa-chart-line"></i>
                     <span>Natijalar</span>
                 </a>
@@ -458,15 +482,17 @@
             {% elif current_user.role == 'teacher' %}
             <div class="nav-section">
                 <div class="nav-section-title">Asosiy</div>
-                <a href="{{ url_for('teacher_dashboard') }}" class="nav-link {% if request.endpoint == 'teacher_dashboard' %}active{% endif %}">
+                <a href="{{ url_for('teacher_dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'teacher_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Panel</span>
                 </a>
             </div>
-            
+
             <div class="nav-section">
                 <div class="nav-section-title">Ko'rish</div>
-                <a href="{{ url_for('teacher_results') }}" class="nav-link {% if request.endpoint == 'teacher_results' %}active{% endif %}">
+                <a href="{{ url_for('teacher_results') }}"
+                    class="nav-link {% if request.endpoint == 'teacher_results' %}active{% endif %}">
                     <i class="fas fa-chart-line"></i>
                     <span>Natijalar</span>
                 </a>
@@ -474,14 +500,15 @@
             {% elif current_user.role == 'student' %}
             <div class="nav-section">
                 <div class="nav-section-title">Asosiy</div>
-                <a href="{{ url_for('student_dashboard') }}" class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                <a href="{{ url_for('student_dashboard') }}"
+                    class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Panel</span>
                 </a>
             </div>
             {% endif %}
         </nav>
-        
+
         <div class="logout-btn">
             <a href="{{ url_for('logout') }}" class="btn-primary-custom w-100">
                 <i class="fas fa-sign-out-alt me-2"></i>
@@ -493,16 +520,17 @@
     <!-- Main Content -->
     <main class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert" style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 12px; margin-bottom: 1rem;">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert"
+            style="background: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary); border-radius: 12px; margin-bottom: 1rem;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
-        
+
         {% block content %}{% endblock %}
     </main>
 
@@ -514,12 +542,12 @@
         }
 
         // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             const sidebar = document.getElementById('sidebar');
             const toggle = document.querySelector('.mobile-menu-toggle');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(event.target) && 
+
+            if (window.innerWidth <= 768 &&
+                !sidebar.contains(event.target) &&
                 !toggle.contains(event.target) &&
                 sidebar.classList.contains('show')) {
                 sidebar.classList.remove('show');
@@ -527,7 +555,7 @@
         });
 
         // Add interactive animations
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Animate stats cards on scroll
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -543,4 +571,5 @@
         });
     </script>
 </body>
+
 </html>

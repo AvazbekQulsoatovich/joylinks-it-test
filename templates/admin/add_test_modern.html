@@ -27,10 +27,10 @@
                         <label class="form-label">
                             <i class="fas fa-heading me-2"></i>Test nomi
                         </label>
-                        <input type="text" class="form-control" name="title" required 
-                               placeholder="Masalan: Python Dasturlash Testi">
+                        <input type="text" class="form-control" name="title" required
+                            placeholder="Masalan: Python Dasturlash Testi">
                     </div>
-                    
+
                     <div class="col-md-6">
                         <label class="form-label">
                             <i class="fas fa-users me-2"></i>Guruh
@@ -44,30 +44,30 @@
                             {% endfor %}
                         </select>
                     </div>
-                    
+
                     <div class="col-md-4">
                         <label class="form-label">
                             <i class="fas fa-calendar-alt me-2"></i>Boshlanish vaqti
                         </label>
                         <input type="datetime-local" class="form-control" name="start_time" required>
                     </div>
-                    
+
                     <div class="col-md-4">
                         <label class="form-label">
                             <i class="fas fa-calendar-check me-2"></i>Tugash vaqti
                         </label>
                         <input type="datetime-local" class="form-control" name="end_time" required>
                     </div>
-                    
+
                     <div class="col-md-4">
                         <label class="form-label">
                             <i class="fas fa-clock me-2"></i>Davomiyligi (daqiqa)
                         </label>
-                        <input type="number" class="form-control" name="duration_minutes" min="1" required 
-                               placeholder="Masalan: 30">
+                        <input type="number" class="form-control" name="duration_minutes" min="1" required
+                            placeholder="Masalan: 30">
                     </div>
                 </div>
-                
+
                 <div class="questions-section">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="mb-0">
@@ -77,14 +77,14 @@
                             <i class="fas fa-plus me-1"></i>Savol qo'shish
                         </button>
                     </div>
-                    
+
                     <div id="questionsContainer">
                         <!-- Savollar shu yerga qo'shiladi -->
                     </div>
                 </div>
-                
+
                 <input type="hidden" name="question_count" id="questionCount" value="0">
-                
+
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" class="btn-primary-custom">
                         <i class="fas fa-save me-2"></i>Testni saqlash
@@ -99,193 +99,200 @@
 </div>
 
 <style>
-.form-label {
-    color: var(--text-primary);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-}
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
 
-.form-control {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-}
+    .form-control {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+    }
 
-.form-control:focus {
-    background: var(--bg-card);
-    border-color: var(--accent);
-    color: var(--text-primary);
-    box-shadow: 0 0 0 0.2rem rgba(26, 95, 79, 0.25);
-}
+    .form-control:focus {
+        background: var(--bg-card);
+        border-color: var(--accent);
+        color: var(--text-primary);
+        box-shadow: 0 0 0 0.2rem rgba(26, 95, 79, 0.25);
+    }
 
-.form-control::placeholder {
-    color: var(--text-secondary);
-}
+    .form-control::placeholder {
+        color: var(--text-secondary);
+    }
 
-.question-item {
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    position: relative;
-}
+    .question-item {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
 
-.question-header {
-    display: flex;
-    justify-content: between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
+    .question-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
 
-.question-number {
-    background: var(--accent);
-    color: var(--bg-primary);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.875rem;
-}
+    .question-number {
+        background: var(--accent);
+        color: var(--bg-primary);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
 
-.btn-remove-question {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-}
+    .btn-remove-question {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
 
-.btn-remove-question:hover {
-    background: #c82333;
-}
+    .btn-remove-question:hover {
+        background: #c82333;
+    }
 
-.btn-primary-custom {
-    background: var(--accent);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 500;
-}
+    .btn-primary-custom {
+        background: var(--accent);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+    }
 
-.btn-primary-custom:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    color: var(--bg-primary);
-}
+    .btn-primary-custom:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+        color: var(--bg-primary);
+    }
 
-.btn-outline-light {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: transparent;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 500;
-}
+    .btn-outline-light {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: transparent;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+    }
 
-.btn-outline-light:hover {
-    background: var(--accent);
-    color: var(--bg-primary);
-    transform: translateY(-2px);
-}
+    .btn-outline-light:hover {
+        background: var(--accent);
+        color: var(--bg-primary);
+        transform: translateY(-2px);
+    }
 
-.btn-outline-secondary {
-    border-color: var(--border);
-    color: var(--text-secondary);
-    background: transparent;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    font-weight: 500;
-}
+    .btn-outline-secondary {
+        border-color: var(--border);
+        color: var(--text-secondary);
+        background: transparent;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+    }
 
-.btn-outline-secondary:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    transform: translateY(-2px);
-}
+    .btn-outline-secondary:hover {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+    }
 
-.btn-success {
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-    transition: all 0.3s ease;
-}
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+    }
 
-.btn-success:hover {
-    background: #218838;
-    transform: translateY(-1px);
-}
+    .btn-success:hover {
+        background: #218838;
+        transform: translateY(-1px);
+    }
 
-.content-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 2rem;
-    backdrop-filter: blur(20px);
-}
+    .content-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(20px);
+    }
 
-.content-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    animation: shimmer 2s ease-in-out infinite;
-}
+    .content-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        animation: shimmer 2s ease-in-out infinite;
+    }
 
-@keyframes shimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
-}
+    @keyframes shimmer {
 
-.content-card:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    border-color: var(--accent);
-}
+        0%,
+        100% {
+            transform: translateX(-100%);
+        }
 
-.questions-section {
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-}
+        50% {
+            transform: translateX(100%);
+        }
+    }
+
+    .content-card:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: var(--accent);
+    }
+
+    .questions-section {
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+    }
 </style>
 
 <script>
-let questionCount = 0;
+    let questionCount = 0;
 
-function addQuestion() {
-    questionCount++;
-    const container = document.getElementById('questionsContainer');
-    
-    const questionHtml = `
+    function addQuestion() {
+        questionCount++;
+        const container = document.getElementById('questionsContainer');
+
+        const questionHtml = `
         <div class="question-item" id="question-${questionCount}">
             <button type="button" class="btn-remove-question" onclick="removeQuestion(${questionCount})">
                 <i class="fas fa-times"></i>
@@ -338,40 +345,40 @@ function addQuestion() {
             </div>
         </div>
     `;
-    
-    container.insertAdjacentHTML('beforeend', questionHtml);
-    document.getElementById('questionCount').value = questionCount;
-}
 
-function removeQuestion(id) {
-    const element = document.getElementById(`question-${id}`);
-    element.remove();
-    
-    // Qolgan savollarni qayta raqamlash
-    const questions = document.querySelectorAll('.question-item');
-    questions.forEach((q, index) => {
-        const newId = index + 1;
-        q.id = `question-${newId}`;
-        q.querySelector('.question-number').textContent = `Savol ${newId}`;
-        q.querySelector('.btn-remove-question').setAttribute('onclick', `removeQuestion(${newId})`);
-    });
-    
-    questionCount = questions.length;
-    document.getElementById('questionCount').value = questionCount;
-}
-
-// Form yuborishdan oldin tekshirish
-document.getElementById('testForm').addEventListener('submit', function(e) {
-    if (questionCount === 0) {
-        e.preventDefault();
-        alert('Iltimos, kamida bitta savol qo\'shing!');
-        return false;
+        container.insertAdjacentHTML('beforeend', questionHtml);
+        document.getElementById('questionCount').value = questionCount;
     }
-});
 
-// Dastlabki savolni qo'shish
-document.addEventListener('DOMContentLoaded', function() {
-    addQuestion();
-});
+    function removeQuestion(id) {
+        const element = document.getElementById(`question-${id}`);
+        element.remove();
+
+        // Qolgan savollarni qayta raqamlash
+        const questions = document.querySelectorAll('.question-item');
+        questions.forEach((q, index) => {
+            const newId = index + 1;
+            q.id = `question-${newId}`;
+            q.querySelector('.question-number').textContent = `Savol ${newId}`;
+            q.querySelector('.btn-remove-question').setAttribute('onclick', `removeQuestion(${newId})`);
+        });
+
+        questionCount = questions.length;
+        document.getElementById('questionCount').value = questionCount;
+    }
+
+    // Form yuborishdan oldin tekshirish
+    document.getElementById('testForm').addEventListener('submit', function (e) {
+        if (questionCount === 0) {
+            e.preventDefault();
+            alert('Iltimos, kamida bitta savol qo\'shing!');
+            return false;
+        }
+    });
+
+    // Dastlabki savolni qo'shish
+    document.addEventListener('DOMContentLoaded', function () {
+        addQuestion();
+    });
 </script>
 {% endblock %}

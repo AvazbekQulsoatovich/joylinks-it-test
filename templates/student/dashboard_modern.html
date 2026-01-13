@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-xl-3 col-lg-6">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-xl-3 col-lg-6">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -59,7 +59,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-xl-3 col-lg-6">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -88,11 +88,13 @@
                         </div>
                         <div>
                             <h6 class="mb-1" style="color: var(--text-primary);">{{ test.title }}</h6>
-                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">{{ test.description or 'Tavsif yoq' }}</p>
+                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">{{
+                                test.description or 'Tavsif yoq' }}</p>
                         </div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ url_for('student_take_test', test_id=test.id) }}" class="btn btn-sm btn-primary-custom">
+                        <a href="{{ url_for('student_take_test', test_id=test.id) }}"
+                            class="btn btn-sm btn-primary-custom">
                             Testni Boshlash
                         </a>
                     </div>
@@ -101,7 +103,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="content-card">
             <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">So'nggi Natijalar</h5>
@@ -114,19 +116,24 @@
                         </div>
                         <div>
                             <h6 class="mb-1" style="color: var(--text-primary);">{{ test.title }}</h6>
-                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">Ball: {{ result.percentage }}%</p>
+                            <p class="mb-0" style="color: var(--text-secondary); font-size: 0.875rem;">Ball: {{
+                                result.percentage }}%</p>
                         </div>
                     </div>
-                    <div>
+                    <div class="d-flex gap-2">
                         <span class="badge {{ 'bg-success' if result.percentage >= 60 else 'bg-danger' }}">
                             {{ 'Topshdi' if result.percentage >= 60 else 'Topshmadi' }}
                         </span>
+                        <a href="{{ url_for('student_download_result_pdf', result_id=result.id) }}"
+                            class="btn btn-sm btn-outline-success" title="PDF yuklab olish">
+                            <i class="fas fa-file-pdf"></i>
+                        </a>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
-        
+
         <div class="content-card mt-4">
             <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Mening Progressim</h5>
             <div class="progress-section">
@@ -135,7 +142,8 @@
                     <span class="badge bg-info">{{ average_score|round(1) if average_score else 0 }}%</span>
                 </div>
                 <div class="progress" style="height: 10px; background: var(--bg-secondary);">
-                    <div class="progress-bar" style="width: {{ "%.1f"|format(average_score) if average_score else 0 }}%; background: var(--accent);"></div>
+                    <div class="progress-bar" style="width: {{ " %.1f"|format(average_score) if average_score else 0
+                        }}%; background: var(--accent);"></div>
                 </div>
             </div>
         </div>
@@ -143,104 +151,116 @@
 </div>
 
 <style>
-.test-icon, .result-icon {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--bg-primary);
-    animation: pulse 2s ease-in-out infinite;
-}
+    .test-icon,
+    .result-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bg-primary);
+        animation: pulse 2s ease-in-out infinite;
+    }
 
-.test-item, .result-item {
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    transition: all 0.3s ease;
-}
+    .test-item,
+    .result-item {
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
 
-.test-item:hover, .result-item:hover {
-    transform: translateX(4px);
-    border-color: var(--accent);
-}
+    .test-item:hover,
+    .result-item:hover {
+        transform: translateX(4px);
+        border-color: var(--accent);
+    }
 
-.progress-section {
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-}
+    .progress-section {
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
 
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-.progress-bar {
-    transition: width 1s ease-in-out;
-}
+    .progress-bar {
+        transition: width 1s ease-in-out;
+    }
 
-.badge {
-    padding: 0.5rem 0.75rem;
-    font-weight: 500;
-}
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-weight: 500;
+    }
 
-.btn-primary-custom {
-    background: var(--accent);
-    color: var(--bg-primary);
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s ease;
-}
+    .btn-primary-custom {
+        background: var(--accent);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+    }
 
-.btn-primary-custom:hover {
-    background: var(--accent-hover);
-    transform: translateY(-2px);
-    color: var(--bg-primary);
-}
+    .btn-primary-custom:hover {
+        background: var(--accent-hover);
+        transform: translateY(-2px);
+        color: var(--bg-primary);
+    }
 
-.floating-element {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: floatElement 5s ease-in-out infinite;
-}
+    .floating-element {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: floatElement 5s ease-in-out infinite;
+    }
 
-@keyframes floatElement {
-    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
-    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
-}
+    @keyframes floatElement {
+
+        0%,
+        100% {
+            transform: translateY(0px) scale(1);
+            opacity: 0.6;
+        }
+
+        50% {
+            transform: translateY(-15px) scale(1.2);
+            opacity: 1;
+        }
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const items = document.querySelectorAll('.test-item, .result-item');
-    items.forEach((item, index) => {
-        item.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
-    });
-
-    const progressBars = document.querySelectorAll('.progress-bar');
-    progressBars.forEach((bar, index) => {
-        setTimeout(() => {
-            bar.style.transition = 'width 1s ease-in-out';
-        }, index * 100);
-    });
-
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px) scale(1.05)';
+    document.addEventListener('DOMContentLoaded', function () {
+        const items = document.querySelectorAll('.test-item, .result-item');
+        items.forEach((item, index) => {
+            item.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
         });
-        btn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
+
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach((bar, index) => {
+            setTimeout(() => {
+                bar.style.transition = 'width 1s ease-in-out';
+            }, index * 100);
+        });
+
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px) scale(1.05)';
+            });
+            btn.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
         });
     });
-});
 </script>
 {% endblock %}

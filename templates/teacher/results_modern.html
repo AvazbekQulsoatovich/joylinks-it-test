@@ -23,6 +23,7 @@
                     <th>Score</th>
                     <th>Percentage</th>
                     <th>Submitted</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,19 +43,29 @@
                     <td>{{ group.name }}</td>
                     <td>{{ test.title }}</td>
                     <td>
-                        <span class="badge" style="background: {% if result.percentage >= 80 %}#10b981{% elif result.percentage >= 60 %}#f59e0b{% else %}#ef4444{% endif %};">
+                        <span class="badge"
+                            style="background: {% if result.percentage >= 80 %}#10b981{% elif result.percentage >= 60 %}#f59e0b{% else %}#ef4444{% endif %};">
                             {{ result.score }}/{{ result.total_questions }}
                         </span>
                     </td>
                     <td>
                         <div class="d-flex align-items-center">
-                            <div class="progress me-2" style="width: 100px; height: 8px; background: var(--bg-secondary);">
-                                <div class="progress-bar" style="width: {{ result.percentage }}%; background: {% if result.percentage >= 80 %}#10b981{% elif result.percentage >= 60 %}#f59e0b{% else %}#ef4444{% endif %};"></div>
+                            <div class="progress me-2"
+                                style="width: 100px; height: 8px; background: var(--bg-secondary);">
+                                <div class="progress-bar"
+                                    style="width: {{ result.percentage }}%; background: {% if result.percentage >= 80 %}#10b981{% elif result.percentage >= 60 %}#f59e0b{% else %}#ef4444{% endif %};">
+                                </div>
                             </div>
                             <span class="fw-semibold">{{ "%.1f"|format(result.percentage) }}%</span>
                         </div>
                     </td>
                     <td>{{ result.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('teacher_export_result_pdf', result_id=result.id) }}"
+                            class="btn btn-sm btn-outline-success" title="PDF yuklab olish">
+                            <i class="fas fa-file-pdf me-1"></i> PDF
+                        </a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -71,44 +82,44 @@
 {% endif %}
 
 <style>
-.user-avatar-sm {
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--bg-primary);
-    font-size: 0.75rem;
-}
+    .user-avatar-sm {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bg-primary);
+        font-size: 0.75rem;
+    }
 
-.table {
-    color: var(--text-primary);
-}
+    .table {
+        color: var(--text-primary);
+    }
 
-.table-dark {
-    background: var(--bg-card);
-}
+    .table-dark {
+        background: var(--bg-card);
+    }
 
-.table-dark th,
-.table-dark td {
-    border-color: var(--border);
-}
+    .table-dark th,
+    .table-dark td {
+        border-color: var(--border);
+    }
 
-.badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-}
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
 
-.progress {
-    border-radius: 4px;
-    overflow: hidden;
-}
+    .progress {
+        border-radius: 4px;
+        overflow: hidden;
+    }
 
-.progress-bar {
-    transition: width 0.3s ease;
-}
+    .progress-bar {
+        transition: width 0.3s ease;
+    }
 </style>
 {% endblock %}

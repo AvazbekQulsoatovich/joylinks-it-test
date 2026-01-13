@@ -525,10 +525,28 @@ def admin_delete_teacher(teacher_id):
     teacher = Teacher.query.get_or_404(teacher_id)
     user = teacher.user
     
+    # Cascade delete: Groups -> Students
+    # First, get all groups of this teacher
+    groups = Group.query.filter_by(teacher_id=teacher.id).all()
+    
+    for group in groups:
+        # Get all students in this group
+        students = Student.query.filter_by(group_id=group.id).all()
+        for student in students:
+            # Delete student's user account
+            student_user = student.user
+            db.session.delete(student)
+            if student_user:
+                db.session.delete(student_user)
+        
+        # Delete the group
+        db.session.delete(group)
+    
+    # Now valid to delete teacher
     db.session.delete(teacher)
     db.session.delete(user)
     db.session.commit()
-    flash("O'qituvchi muvaffaqiyatli o'chirildi!", 'success')
+    flash("O'qituvchi va uning guruhlari/o'quvchilari muvaffaqiyatli o'chirildi!", 'success')
     return redirect(url_for('admin_teachers'))
 
 @app.route('/admin/teachers/view/<int:teacher_id>')
@@ -570,12 +588,13 @@ def admin_students():
     
     # Format data for template
     students = []
-    for student_obj, user_obj, group_obj, teacher_obj, course_obj in students_data:
+    for student_obj, user_obj, group_obj, teacher_obj, teacher_user_obj, course_obj in students_data:
         students.append({
             'student': student_obj,
             'user': user_obj,
             'group': group_obj,
             'teacher': teacher_obj,
+            'teacher_user': teacher_user_obj,
             'course': course_obj
         })
     
@@ -778,8 +797,10 @@ def student_dashboard():
         print(f"Test results count: {len(results)}")
         
         # Available tests (mavjud testlar)
-        available_tests = Test.query.filter_by(group_id=student.group_id).all()
-        print(f"Available tests count: {len(available_tests)}")
+        all_tests = Test.query.filter_by(group_id=student.group_id).all()
+        completed_test_ids = {result[1].id for result in results}
+        available_tests = [test for test in all_tests if test.id not in completed_test_ids]
+        print(f"Available tests: {len(available_tests)}, Completed: {len(completed_test_ids)}")
         
         # Calculate average score
         average_score = 0
@@ -790,7 +811,7 @@ def student_dashboard():
         uzbekistan_tz = pytz.timezone('Asia/Tashkent')
         current_time = datetime.now(uzbekistan_tz)
         
-        return render_template('student/dashboard_modern.html', student=student, results=results, available_tests=available_tests, current_time=current_time, average_score=average_score)
+        return render_template('student/dashboard_modern.html', student=student, results=results, available_tests=available_tests, completed_test_ids=completed_test_ids, current_time=current_time, average_score=average_score)
     except Exception as e:
         print(f"❌ Error in student dashboard: {e}")
         import traceback
@@ -970,6 +991,41 @@ def teacher_export_result_pdf(result_id):
     buffer.seek(0)
     
     return send_file(buffer, as_attachment=True, download_name=f'result_{result_obj.id}.pdf', mimetype='application/pdf')
+
+@app.route('/student/result/<int:result_id>/pdf')
+@student_required
+def student_download_result_pdf(result_id):
+    student = Student.query.filter_by(user_id=current_user.id).first()
+    result = TestResult.query.filter_by(id=result_id, student_id=student.id).first_or_404()
+    
+    # Create PDF
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    # Title
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(100, 750, "Mening Test Natijam")
+    
+    # Student Information
+    p.setFont("Helvetica", 12)
+    p.drawString(100, 700, f"O'quvchi: {current_user.full_name}")
+    p.drawString(100, 680, f"Guruh: {result.student.group.name}")
+    p.drawString(100, 660, f"Test: {result.test.title}")
+    
+    # Score Information
+    p.drawString(100, 620, f"Ball: {result.score}/{result.total_questions}")
+    p.drawString(100, 600, f"Foiz: {result.percentage:.1f}%")
+    p.drawString(100, 580, f"Topshirilgan: {result.submitted_at.strftime('%Y-%m-%d %H:%M')}")
+    
+    # Pass/Fail status
+    status = "O'tdim" if result.percentage >= 60 else "O'tmadim"
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(100, 540, f"Holat: {status}")
+    
+    p.save()
+    buffer.seek(0)
+    
+    return send_file(buffer, as_attachment=True, download_name=f'natijam_{result.id}.pdf', mimetype='application/pdf')
 
 if __name__ == '__main__':
     with app.app_context():
