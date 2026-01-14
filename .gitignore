@@ -61,6 +61,10 @@ htmlcov/
 *.tmp
 *.bak
 *.backup
+cookies*.txt
+login_info.txt
+student_cookies.txt
+'sessionid=test'
 
 # OS
 Thumbs.db

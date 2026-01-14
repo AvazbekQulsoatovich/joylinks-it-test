@@ -61,10 +61,16 @@
                     </td>
                     <td>{{ result.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
                     <td>
-                        <a href="{{ url_for('teacher_export_result_pdf', result_id=result.id) }}"
-                            class="btn btn-sm btn-outline-success" title="PDF yuklab olish">
-                            <i class="fas fa-file-pdf me-1"></i> PDF
-                        </a>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('teacher_result_detail', result_id=result.id) }}"
+                                class="btn btn-sm btn-outline-primary" title="Batafsil ko'rish">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ url_for('teacher_export_result_pdf', result_id=result.id) }}"
+                                class="btn btn-sm btn-outline-success" title="PDF yuklab olish">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

@@ -24,6 +24,7 @@
                 <i class="fas fa-user-plus me-2" style="color: var(--accent);"></i>Yangi O'quvchi Qo'shish
             </h5>
             <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label" style="color: var(--text-primary);">To'liq Ismi *</label>

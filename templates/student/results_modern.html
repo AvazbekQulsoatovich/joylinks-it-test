@@ -1,0 +1,77 @@
+{% extends "base_modern.html" %}
+
+{% block title %}Mening Natijalarim - Joylinks IT{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">Mening Natijalarim</h1>
+            <p class="page-subtitle">Barcha topshirilgan testlar tarixi</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline-light">
+                <i class="fas fa-arrow-left me-2"></i>Dashboardga qaytish
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="content-card">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-clipboard-list me-2"></i>Test Nomi</th>
+                    <th><i class="fas fa-calendar-alt me-2"></i>Sana</th>
+                    <th><i class="fas fa-percentage me-2"></i>Ball</th>
+                    <th><i class="fas fa-check-circle me-2"></i>Holat</th>
+                    <th><i class="fas fa-file-pdf me-2"></i>PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result, test in results %}
+                <tr class="table-row-hover">
+                    <td>
+                        <strong>{{ test.title }}</strong>
+                    </td>
+                    <td>
+                        <small class="text-secondary">{{ result.submitted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="progress me-2"
+                                style="width: 100px; height: 8px; background: var(--bg-secondary);">
+                                <div class="progress-bar"
+                                    style="width: {{ result.percentage }}%; background: {{ '#28a745' if result.percentage >= 60 else '#dc3545' }};">
+                                </div>
+                            </div>
+                            <strong>{{ result.percentage }}%</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {{ 'bg-success' if result.percentage >= 60 else 'bg-danger' }}">
+                            {{ "O'tdi" if result.percentage >= 60 else "O'tolmadi" }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('student_download_result_pdf', result_id=result.id) }}"
+                            class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if not results %}
+<div class="content-card text-center py-5">
+    <i class="fas fa-history fa-3x mb-3 text-secondary"></i>
+    <h5 class="text-primary">Hali test topshirilmagan</h5>
+    <p class="text-secondary">Sizda hali natijalar mavjud emas.</p>
+</div>
+{% endif %}
+{% endblock %}

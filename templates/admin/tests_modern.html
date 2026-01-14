@@ -75,6 +75,7 @@
                     <td>
                         <div class="btn-group" role="group">
                             <form method="POST" action="{{ url_for('admin_delete_test', test_id=test.id) }}" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                 <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Testni o\'chirishni tasdiqlaysizmi? Barcha natijalar yo\'qoladi.')">
                                     <i class="fas fa-trash"></i>
                                 </button>

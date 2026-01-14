@@ -618,7 +618,30 @@ def admin_view_student(student_id):
         .filter(Student.id == student_id)\
         .first_or_404()
     
-    return render_template('admin/view_student_modern.html', student=student)
+    # Sort results by date
+    results = sorted(student[0].results, key=lambda x: x.submitted_at)
+    
+    # Prepare chart labels and data
+    chart_labels = [r.test.title for r in results]
+    chart_data = [r.percentage for r in results]
+    
+    # Prepare monthly stats
+    monthly_stats = {}
+    for r in results:
+        month_key = r.submitted_at.strftime('%Y-%m')
+        if month_key not in monthly_stats:
+            monthly_stats[month_key] = []
+        monthly_stats[month_key].append(r.percentage)
+    
+    monthly_labels = sorted(monthly_stats.keys())
+    monthly_data = [sum(monthly_stats[m]) / len(monthly_stats[m]) for m in monthly_labels]
+    
+    return render_template('admin/view_student_modern.html', 
+                         student=student,
+                         chart_labels=chart_labels,
+                         chart_data=chart_data,
+                         monthly_labels=monthly_labels,
+                         monthly_data=monthly_data)
 
 @app.route('/admin/results')
 @admin_required
@@ -807,11 +830,31 @@ def student_dashboard():
         if results:
             average_score = sum(result[0].percentage for result in results) / len(results)
         
-        # Toshkent vaqtini olish (UTC+5)
+        # Group outcomes by month for chart
+        monthly_stats = {}
+        for result, test in results:
+            month_key = result.submitted_at.strftime('%Y-%m')
+            if month_key not in monthly_stats:
+                monthly_stats[month_key] = []
+            monthly_stats[month_key].append(result.percentage)
+        
+        # Sort months and calculate averages
+        months = sorted(monthly_stats.keys())
+        monthly_averages = [sum(monthly_stats[m]) / len(monthly_stats[m]) for m in months]
+        
+        # Uzbekistan vaqtini olish
         uzbekistan_tz = pytz.timezone('Asia/Tashkent')
         current_time = datetime.now(uzbekistan_tz)
         
-        return render_template('student/dashboard_modern.html', student=student, results=results, available_tests=available_tests, completed_test_ids=completed_test_ids, current_time=current_time, average_score=average_score)
+        return render_template('student/dashboard_modern.html', 
+                             student=student, 
+                             results=results, 
+                             available_tests=available_tests, 
+                             completed_test_ids=completed_test_ids, 
+                             current_time=current_time, 
+                             average_score=average_score,
+                             months=months,
+                             monthly_averages=monthly_averages)
     except Exception as e:
         print(f"❌ Error in student dashboard: {e}")
         import traceback
@@ -929,31 +972,84 @@ def student_submit_test(test_id):
 @app.route('/admin/results/pdf/<int:result_id>')
 @admin_required
 def admin_export_result_pdf(result_id):
+    # ... existing implementation ...
     result = TestResult.query.get_or_404(result_id)
-    
-    # Create PDF
     buffer = io.BytesIO()
     p = canvas.Canvas(buffer, pagesize=letter)
-    
-    # Title
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(100, 750, "Test Result Report")
-    
-    # Student Information
+    p.drawString(100, 750, "Test Natijasi Hisoboti")
     p.setFont("Helvetica", 12)
-    p.drawString(100, 700, f"Student: {result.student.user.full_name}")
-    p.drawString(100, 680, f"Group: {result.student.group.name}")
+    p.drawString(100, 700, f"O'quvchi: {result.student.user.full_name}")
+    p.drawString(100, 680, f"Guruh: {result.student.group.name}")
     p.drawString(100, 660, f"Test: {result.test.title}")
-    
-    # Score Information
-    p.drawString(100, 620, f"Score: {result.score}/{result.total_questions}")
-    p.drawString(100, 600, f"Percentage: {result.percentage:.1f}%")
-    p.drawString(100, 580, f"Submitted: {result.submitted_at.strftime('%Y-%m-%d %H:%M')}")
-    
+    p.drawString(100, 620, f"Ball: {result.score}/{result.total_questions}")
+    p.drawString(100, 600, f"Foiz: {result.percentage:.1f}%")
+    p.drawString(100, 580, f"Sana: {result.submitted_at.strftime('%Y-%m-%d %H:%M')}")
     p.save()
     buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f'natija_{result.id}.pdf', mimetype='application/pdf')
+
+@app.route('/admin/result/<int:result_id>')
+@admin_required
+def admin_result_detail(result_id):
+    import ast
+    result = db.session.query(TestResult, Student, User, Group, Test)\
+        .join(Student, TestResult.student_id == Student.id)\
+        .join(User, Student.user_id == User.id)\
+        .join(Group, Student.group_id == Group.id)\
+        .join(Test, TestResult.test_id == Test.id)\
+        .filter(TestResult.id == result_id).first_or_404()
     
-    return send_file(buffer, as_attachment=True, download_name=f'result_{result.id}.pdf', mimetype='application/pdf')
+    result_obj, student_obj, user_obj, group_obj, test_obj = result
+    
+    # Parse answers
+    try:
+        student_answers = ast.literal_eval(result_obj.answers)
+    except:
+        student_answers = {}
+        
+    questions = Question.query.filter_by(test_id=test_obj.id).all()
+    
+    return render_template('admin/result_detail_modern.html', 
+                         result=result_obj, 
+                         student=student_obj, 
+                         user=user_obj, 
+                         group=group_obj, 
+                         test=test_obj,
+                         questions=questions,
+                         answers=student_answers)
+
+@app.route('/teacher/result/<int:result_id>')
+@teacher_required
+def teacher_result_detail(result_id):
+    import ast
+    teacher = Teacher.query.filter_by(user_id=current_user.id).first()
+    result = db.session.query(TestResult, Student, User, Group, Test)\
+        .join(Student, TestResult.student_id == Student.id)\
+        .join(User, Student.user_id == User.id)\
+        .join(Group, Student.group_id == Group.id)\
+        .join(Test, TestResult.test_id == Test.id)\
+        .filter(TestResult.id == result_id, Group.teacher_id == teacher.id).first_or_404()
+    
+    result_obj, student_obj, user_obj, group_obj, test_obj = result
+    
+    # Parse answers
+    try:
+        student_answers = ast.literal_eval(result_obj.answers)
+    except:
+        student_answers = {}
+        
+    questions = Question.query.filter_by(test_id=test_obj.id).all()
+    
+    return render_template('admin/result_detail_modern.html', 
+                         result=result_obj, 
+                         student=student_obj, 
+                         user=user_obj, 
+                         group=group_obj, 
+                         test=test_obj,
+                         questions=questions,
+                         answers=student_answers,
+                         is_teacher=True)
 
 @app.route('/teacher/results/pdf/<int:result_id>')
 @teacher_required
@@ -992,7 +1088,66 @@ def teacher_export_result_pdf(result_id):
     
     return send_file(buffer, as_attachment=True, download_name=f'result_{result_obj.id}.pdf', mimetype='application/pdf')
 
-@app.route('/student/result/<int:result_id>/pdf')
+@app.route('/teacher/group/<int:group_id>/pdf')
+@teacher_required
+def teacher_export_group_pdf(group_id):
+    teacher = Teacher.query.filter_by(user_id=current_user.id).first()
+    group = Group.query.filter_by(id=group_id, teacher_id=teacher.id).first_or_404()
+    
+    results = db.session.query(TestResult, Student, User, Test)\
+        .join(Student, TestResult.student_id == Student.id)\
+        .join(User, Student.user_id == User.id)\
+        .join(Test, TestResult.test_id == Test.id)\
+        .filter(Student.group_id == group_id)\
+        .all()
+    
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Title
+    p.setFont("Helvetica-Bold", 16)
+    p.drawCentredString(width/2, height - 50, f"{group.name} Guruxi Natijalari")
+    
+    # Headers
+    p.setFont("Helvetica-Bold", 10)
+    y = height - 100
+    p.drawString(50, y, "O'quvchi")
+    p.drawString(250, y, "Test")
+    p.drawString(400, y, "Ball")
+    p.drawString(450, y, "Foiz")
+    p.drawString(500, y, "Sana")
+    
+    p.line(50, y-5, 550, y-5)
+    y -= 20
+    
+    p.setFont("Helvetica", 9)
+    for res_obj, student_obj, user_obj, test_obj in results:
+        if y < 50:
+            p.showPage()
+            p.setFont("Helvetica-Bold", 10)
+            y = height - 50
+            p.drawString(50, y, "O'quvchi")
+            p.drawString(250, y, "Test")
+            p.drawString(400, y, "Ball")
+            p.drawString(450, y, "Foiz")
+            p.drawString(500, y, "Sana")
+            p.line(50, y-5, 550, y-5)
+            y -= 20
+            p.setFont("Helvetica", 9)
+            
+        p.drawString(50, y, user_obj.full_name)
+        p.drawString(250, y, test_obj.title[:30])
+        p.drawString(400, y, f"{res_obj.score}/{res_obj.total_questions}")
+        p.drawString(450, y, f"{res_obj.percentage:.1f}%")
+        p.drawString(500, y, res_obj.submitted_at.strftime('%Y-%m-%d'))
+        y -= 15
+        
+    p.save()
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f'guruh_natija_{group.name}.pdf', mimetype='application/pdf')
+
+@app.route('/student/results/pdf/<int:result_id>')
 @student_required
 def student_download_result_pdf(result_id):
     student = Student.query.filter_by(user_id=current_user.id).first()
@@ -1004,18 +1159,18 @@ def student_download_result_pdf(result_id):
     
     # Title
     p.setFont("Helvetica-Bold", 16)
-    p.drawString(100, 750, "Mening Test Natijam")
+    p.drawString(100, 750, "Test Natijasi (O'quvchi)")
     
-    # Student Information
+    # Information
     p.setFont("Helvetica", 12)
     p.drawString(100, 700, f"O'quvchi: {current_user.full_name}")
-    p.drawString(100, 680, f"Guruh: {result.student.group.name}")
+    p.drawString(100, 680, f"Guruh: {student.group.name}")
     p.drawString(100, 660, f"Test: {result.test.title}")
     
-    # Score Information
+    # Score
     p.drawString(100, 620, f"Ball: {result.score}/{result.total_questions}")
     p.drawString(100, 600, f"Foiz: {result.percentage:.1f}%")
-    p.drawString(100, 580, f"Topshirilgan: {result.submitted_at.strftime('%Y-%m-%d %H:%M')}")
+    p.drawString(100, 580, f"Sana: {result.submitted_at.strftime('%Y-%m-%d %H:%M')}")
     
     # Pass/Fail status
     status = "O'tdim" if result.percentage >= 60 else "O'tmadim"
@@ -1025,23 +1180,30 @@ def student_download_result_pdf(result_id):
     p.save()
     buffer.seek(0)
     
-    return send_file(buffer, as_attachment=True, download_name=f'natijam_{result.id}.pdf', mimetype='application/pdf')
+    return send_file(buffer, as_attachment=True, download_name=f'natija_{result.id}.pdf', mimetype='application/pdf')
+
+@app.route('/student/results')
+@student_required
+def student_results():
+    student = Student.query.filter_by(user_id=current_user.id).first()
+    results = db.session.query(TestResult, Test).join(Test, TestResult.test_id == Test.id).filter(TestResult.student_id == student.id).order_by(TestResult.submitted_at.desc()).all()
+    return render_template('student/results_modern.html', results=results, student=student)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         
         # Create default admin if not exists
-        if not User.query.filter_by(username='admin').first():
+        if not User.query.filter_by(username='Avazbek').first():
             admin_user = User(
-                username='admin',
-                password_hash=generate_password_hash('secure_admin_password_2024'),
+                username='Avazbek',
+                password_hash=generate_password_hash('jumanazarov'),
                 role='admin',
-                full_name='System Administrator'
+                full_name='Avazbek Jumanazarov'
             )
             db.session.add(admin_user)
             db.session.commit()
-            print("Default admin user created: username=admin")
+            print("Default admin user created: username=Avazbek")
     
     # Production settings with debug mode for better error logging
     app.run(

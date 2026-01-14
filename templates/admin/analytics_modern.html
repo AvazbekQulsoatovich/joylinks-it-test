@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -45,7 +45,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -59,7 +59,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-3">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -75,64 +75,50 @@
     </div>
 </div>
 
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <div class="row g-4">
-    <div class="col-lg-8">
+    <div class="col-lg-6">
         <div class="content-card">
-            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Group Performance</h5>
-            <div class="group-performance">
-                {% if charts.group_averages %}
-                    {% for group_name, avg_score in charts.group_averages.items() %}
-                    <div class="group-item mb-3">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span>{{ group_name }}</span>
-                            <span class="badge bg-info">{{ "%.1f"|format(avg_score) }}%</span>
-                        </div>
-                        <div class="progress" style="height: 10px; background: var(--bg-secondary);">
-                            <div class="progress-bar" style="width: {{ "%.1f"|format(avg_score) }}%; background: var(--accent);"></div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center text-secondary">
-                        <i class="fas fa-chart-bar fa-3x mb-3"></i>
-                        <p>No group data available</p>
-                    </div>
-                {% endif %}
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Guruhlar ko'rsatkichi (Diagramma)
+            </h5>
+            <canvas id="groupChart" height="300"></canvas>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">O'tgan/O'tolmagan (Diagramma)</h5>
+            <div style="max-width: 300px; margin: 0 auto;">
+                <canvas id="passFailChart"></canvas>
             </div>
         </div>
     </div>
-    
-    <div class="col-lg-4">
+</div>
+
+<div class="row g-4 mt-2">
+    <div class="col-lg-12">
         <div class="content-card">
-            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Pass/Fail Ratio</h5>
-            <div class="pass-fail-chart">
-                {% if charts.pass_fail %}
-                <div class="pass-section">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Passed</span>
-                        <span class="badge bg-success">{{ charts.pass_fail.pass }}</span>
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Guruhlar bo'yicha batafsil</h5>
+            <div class="group-performance">
+                {% if charts.group_averages %}
+                {% for group_name, avg_score in charts.group_averages.items() %}
+                <div class="group-item mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ group_name }}</span>
+                        <span class="badge bg-info">{{ "%.1f"|format(avg_score) }}%</span>
                     </div>
-                    <div class="progress" style="height: 20px; background: var(--bg-secondary);">
-                        {% set total = charts.pass_fail.pass + charts.pass_fail.fail %}
-                        {% set pass_percent = (charts.pass_fail.pass / total * 100) if total > 0 else 0 %}
-                        <div class="progress-bar" style="width: {{ "%.1f"|format(pass_percent) }}%; background: #28a745;"></div>
-                    </div>
-                </div>
-                <div class="fail-section">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Failed</span>
-                        <span class="badge bg-danger">{{ charts.pass_fail.fail }}</span>
-                    </div>
-                    <div class="progress" style="height: 20px; background: var(--bg-secondary);">
-                        {% set total = charts.pass_fail.pass + charts.pass_fail.fail %}
-                        {% set fail_percent = (charts.pass_fail.fail / total * 100) if total > 0 else 0 %}
-                        <div class="progress-bar" style="width: {{ "%.1f"|format(fail_percent) }}%; background: #dc3545;"></div>
+                    <div class="progress" style="height: 10px; background: var(--bg-secondary);">
+                        <div class="progress-bar" style="width: {{ " %.1f"|format(avg_score) }}%; background:
+                            var(--accent);"></div>
                     </div>
                 </div>
+                {% endfor %}
                 {% else %}
                 <div class="text-center text-secondary">
-                    <i class="fas fa-chart-pie fa-3x mb-3"></i>
-                    <p>No pass/fail data available</p>
+                    <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                    <p>Ma'lumotlar mavjud emas</p>
                 </div>
                 {% endif %}
             </div>
@@ -141,125 +127,209 @@
 </div>
 
 <style>
-.stats-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(20px);
-    position: relative;
-    overflow: hidden;
-}
+    .stats-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+    }
 
-.stats-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    animation: shimmer 2s ease-in-out infinite;
-}
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        animation: shimmer 2s ease-in-out infinite;
+    }
 
-@keyframes shimmer {
-    0%, 100% { transform: translateX(-100%); }
-    50% { transform: translateX(100%); }
-}
+    @keyframes shimmer {
 
-.stats-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    border-color: var(--accent);
-}
+        0%,
+        100% {
+            transform: translateX(-100%);
+        }
 
-.stats-card h3 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-}
+        50% {
+            transform: translateX(100%);
+        }
+    }
 
-.stats-card p {
-    color: var(--text-secondary);
-    margin: 0;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
+    .stats-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: var(--accent);
+    }
 
-.stats-icon {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: pulse 2s ease-in-out infinite;
-    box-shadow: 0 4px 20px rgba(26, 95, 79, 0.3);
-}
+    .stats-card h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
 
-.stats-icon i {
-    font-size: 1.25rem;
-    color: var(--bg-primary);
-}
+    .stats-card p {
+        color: var(--text-secondary);
+        margin: 0;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
 
-.group-item {
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-}
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s ease-in-out infinite;
+        box-shadow: 0 4px 20px rgba(26, 95, 79, 0.3);
+    }
 
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .stats-icon i {
+        font-size: 1.25rem;
+        color: var(--bg-primary);
+    }
 
-.progress-bar {
-    transition: width 1s ease-in-out;
-}
+    .group-item {
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
 
-.badge {
-    padding: 0.5rem 0.75rem;
-    font-weight: 500;
-}
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-.pass-section, .fail-section {
-    padding: 1rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
-}
+    .progress-bar {
+        transition: width 1s ease-in-out;
+    }
 
-.pass-section {
-    background: rgba(40, 167, 69, 0.1);
-    border: 1px solid rgba(40, 167, 69, 0.3);
-}
+    .badge {
+        padding: 0.5rem 0.75rem;
+        font-weight: 500;
+    }
 
-.fail-section {
-    background: rgba(220, 53, 69, 0.1);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-}
+    .pass-section,
+    .fail-section {
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+    }
 
-.floating-element {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: floatElement 5s ease-in-out infinite;
-}
+    .pass-section {
+        background: rgba(40, 167, 69, 0.1);
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
 
-@keyframes floatElement {
-    0%, 100% { transform: translateY(0px) scale(1); opacity: 0.6; }
-    50% { transform: translateY(-15px) scale(1.2); opacity: 1; }
-}
+    .fail-section {
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+
+    .floating-element {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: floatElement 5s ease-in-out infinite;
+    }
+
+    @keyframes floatElement {
+
+        0%,
+        100% {
+            transform: translateY(0px) scale(1);
+            opacity: 0.6;
+        }
+
+        50% {
+            transform: translateY(-15px) scale(1.2);
+            opacity: 1;
+        }
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Group Performance Chart
+        const groupCtx = document.getElementById('groupChart').getContext('2d');
+        const groupLabels = [{% if charts.group_averages %}{% for group_name in charts.group_averages.keys() %}'{{ group_name }}', {% endfor %}{% endif %}];
+    const groupData = [{% if charts.group_averages %}{% for avg_score in charts.group_averages.values() %} { { "%.1f" | format(avg_score) } }, {% endfor %} {% endif %}];
+
+    new Chart(groupCtx, {
+        type: 'bar',
+        data: {
+            labels: groupLabels,
+            datasets: [{
+                label: 'O\'rtacha ball (%)',
+                data: groupData,
+                backgroundColor: 'rgba(26, 95, 79, 0.6)',
+                borderColor: 'rgba(26, 95, 79, 1)',
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                    ticks: { color: '#888' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#888' }
+                }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+
+    // Pass/Fail Chart
+    const pfCtx = document.getElementById('passFailChart').getContext('2d');
+    const passCount = {{ charts.pass_fail.pass if charts.pass_fail else 0 }};
+    const failCount = {{ charts.pass_fail.fail if charts.pass_fail else 0 }};
+
+    new Chart(pfCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['O\'tgan', 'O\'tolmagan'],
+            datasets: [{
+                data: [passCount, failCount],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: { color: '#888', padding: 20 }
+                }
+            },
+            cutout: '70%'
+        }
+    });
+
     // Animate stats cards
     const cards = document.querySelectorAll('.stats-card');
     cards.forEach((card, index) => {
@@ -282,18 +352,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add hover effects
     document.querySelectorAll('.stats-card').forEach(card => {
-        card.addEventListener('mouseenter', function() {
+        card.addEventListener('mouseenter', function () {
             this.style.transform = 'translateY(-8px) scale(1.02)';
         });
-        card.addEventListener('mouseleave', function() {
+        card.addEventListener('mouseleave', function () {
             this.style.transform = 'translateY(-4px) scale(1)';
         });
     });
-});
+    });
 
-function refreshAnalytics() {
-    console.log('Refreshing analytics...');
-    location.reload();
-}
+    function refreshAnalytics() {
+        console.log('Refreshing analytics...');
+        location.reload();
+    }
 </script>
 {% endblock %}

@@ -21,6 +21,7 @@
     <div class="col-lg-8">
         <div class="content-card">
             <form method="POST" id="testForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label class="form-label" style="color: var(--text-primary);">Test Title</label>

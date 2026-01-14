@@ -9,7 +9,10 @@
             <h1 class="page-title">{{ group.name }}</h1>
             <p class="page-subtitle">Guruhdagi o'quvchilar va testlar</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('teacher_export_group_pdf', group_id=group.id) }}" class="btn btn-outline-danger">
+                <i class="fas fa-file-pdf me-2"></i>PDF Hisobot
+            </a>
             <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>Orqaga
             </a>
@@ -31,7 +34,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -45,7 +48,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-4">
         <div class="stats-card">
             <div class="d-flex align-items-center justify-content-between">
@@ -110,7 +113,7 @@
             {% endif %}
         </div>
     </div>
-    
+
     <div class="col-lg-4">
         <div class="content-card">
             <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
@@ -137,7 +140,7 @@
             </div>
             {% endif %}
         </div>
-        
+
         <div class="content-card mt-4">
             <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">
                 <i class="fas fa-info-circle me-2" style="color: var(--accent);"></i>Guruh ma'lumoti
@@ -161,59 +164,59 @@
 </div>
 
 <style>
-.avatar-sm {
-    width: 40px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--bg-primary);
-    font-size: 14px;
-}
+    .avatar-sm {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--bg-primary);
+        font-size: 14px;
+    }
 
-.table {
-    background: var(--bg-card);
-    border-radius: 10px;
-    overflow: hidden;
-}
+    .table {
+        background: var(--bg-card);
+        border-radius: 10px;
+        overflow: hidden;
+    }
 
-.table th {
-    background: var(--bg-secondary);
-    border: none;
-    color: var(--text-primary);
-    font-weight: 600;
-}
+    .table th {
+        background: var(--bg-secondary);
+        border: none;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
 
-.table td {
-    border: none;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-primary);
-    background: var(--bg-card) !important;
-}
+    .table td {
+        border: none;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-primary);
+        background: var(--bg-card) !important;
+    }
 
-.table-hover tbody tr:hover {
-    background: var(--bg-secondary) !important;
-}
+    .table-hover tbody tr:hover {
+        background: var(--bg-secondary) !important;
+    }
 
-.table-hover tbody tr {
-    background: var(--bg-card) !important;
-}
+    .table-hover tbody tr {
+        background: var(--bg-card) !important;
+    }
 
-.list-group-item {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-}
+    .list-group-item {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        color: var(--text-primary);
+    }
 
-.list-group-item:hover {
-    background: var(--bg-secondary);
-}
+    .list-group-item:hover {
+        background: var(--bg-secondary);
+    }
 
-.badge {
-    font-size: 12px;
-    padding: 6px 12px;
-}
+    .badge {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
 </style>
 {% endblock %}

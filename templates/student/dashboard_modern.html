@@ -75,6 +75,15 @@
     </div>
 </div>
 
+<div class="row g-4 mb-4">
+    <div class="col-lg-12">
+        <div class="content-card">
+            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">Oylik Progress (Diagramma)</h5>
+            <canvas id="monthlyChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="content-card">
@@ -106,7 +115,10 @@
 
     <div class="col-lg-4">
         <div class="content-card">
-            <h5 class="mb-4" style="color: var(--text-primary); font-weight: 600;">So'nggi Natijalar</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0" style="color: var(--text-primary); font-weight: 600;">So'nggi Natijalar</h5>
+                <a href="{{ url_for('student_results') }}" class="btn btn-sm btn-outline-light">Barchasi</a>
+            </div>
             <div class="results-list">
                 {% for result, test in results[:5] %}
                 <div class="result-item d-flex align-items-center justify-content-between mb-3">
@@ -142,8 +154,9 @@
                     <span class="badge bg-info">{{ average_score|round(1) if average_score else 0 }}%</span>
                 </div>
                 <div class="progress" style="height: 10px; background: var(--bg-secondary);">
-                    <div class="progress-bar" style="width: {{ " %.1f"|format(average_score) if average_score else 0
-                        }}%; background: var(--accent);"></div>
+                    <div id="overall-progress-bar" class="progress-bar"
+                        data-progress="{{ average_score|default(0)|round(1) }}" style="background: var(--accent);">
+                    </div>
                 </div>
             </div>
         </div>
@@ -239,27 +252,61 @@
     }
 </style>
 
+<!-- Chart Data -->
+<div id="student-chart-data" data-months="{{ months|tojson }}" data-averages="{{ monthly_averages|tojson }}"
+    style="display: none;">
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const items = document.querySelectorAll('.test-item, .result-item');
-        items.forEach((item, index) => {
-            item.style.animation = `fadeIn 0.5s ease-in ${index * 0.1}s`;
-        });
+        // Set progress bar width
+        const progressBar = document.getElementById('overall-progress-bar');
+        if (progressBar) {
+            progressBar.style.width = progressBar.dataset.progress + '%';
+        }
 
-        const progressBars = document.querySelectorAll('.progress-bar');
-        progressBars.forEach((bar, index) => {
-            setTimeout(() => {
-                bar.style.transition = 'width 1s ease-in-out';
-            }, index * 100);
-        });
+        // Get data from data attributes
+        const chartDataEl = document.getElementById('student-chart-data');
+        const months = JSON.parse(chartDataEl.dataset.months);
+        const averages = JSON.parse(chartDataEl.dataset.averages);
 
-        document.querySelectorAll('.btn').forEach(btn => {
-            btn.addEventListener('mouseenter', function () {
-                this.style.transform = 'translateY(-2px) scale(1.05)';
-            });
-            btn.addEventListener('mouseleave', function () {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
+        // Monthly Progress Chart
+        const ctx = document.getElementById('monthlyChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'O\'rtacha ball (%)',
+                    data: averages,
+                    borderColor: 'rgba(26, 95, 79, 1)',
+                    backgroundColor: 'rgba(26, 95, 79, 0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(26, 95, 79, 1)',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { color: '#888' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888' }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
         });
     });
 </script>

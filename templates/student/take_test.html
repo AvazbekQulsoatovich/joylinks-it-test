@@ -40,6 +40,7 @@
 </div>
 
 <form method="POST" action="{{ url_for('student_submit_test', test_id=test.id) }}" id="testForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <div class="card mt-4">
         <div class="card-header">
             <h5 class="mb-0"><i class="fas fa-question-circle"></i> Questions</h5>
