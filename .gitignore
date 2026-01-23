@@ -68,3 +68,18 @@ student_cookies.txt
 
 # OS
 Thumbs.db
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Flask
+instance/
+.env
+
+# OS
+.DS_Store
